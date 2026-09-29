@@ -52,7 +52,6 @@ const TARGETS = {
   portfolioSessions:      1,   // per month
   careerPlanningSessions: 1,   // per month
   socialEvents:           2,   // per month
-  workshopDeliveryPct:    90,  // % of planned sessions delivered
 };
 const WEEKLY_KEYS = ['ypContacts', 'outreachActivities'];
 
@@ -105,7 +104,6 @@ const SECTIONS = [
   ]},
   { title: "Programme & Review", badge: "06", freq: "Monthly", kpis: [
     { label: "Labour market / opportunities review",   key: "labourMarketReview",  yesNo: true, monthly: true },
-    { label: "Workshop sessions delivered as planned", key: "workshopDeliveryPct", unit: "%",   monthly: true },
     { label: "Participant feedback reviewed",          key: "feedbackReviewDone",  yesNo: true, monthly: true },
     { label: "Youth insight review held",              key: "youthInsightReview",  yesNo: true, monthly: true },
   ]},
@@ -142,17 +140,17 @@ function kpiRag(k, d, targets) {
 // ═══════════════════════════════════════════════════════════════
 // CSV parser
 // Sheet has 2 header rows (title + column names) then data.
-// Column order (A=0 … R=17):
+// Column order (A=0 … Y=24):
 //  0 Week                  1 YP Contacts           2 CRM Same-Day Compliance
 //  3 Action Plans Updated  4 New Applicant F-ups   5 External Outreach
 //  6 Active Caseload Size  7 Job Club              8 Mock Interview
 //  9 LinkedIn             10 Portfolio            11 Career Planning
-// 12 Social Events        13 Session Updates Posted 14 Workshop Delivery %
-// 15 Feedback Review      16 Youth Insight Review 17 Labour Market Review
-// 18 Recruitment Period Active
-// 19 Entered Employment   20 Entered Education    21 Entered Training
-// 22 Interviews Secured   23 Work Experience      24 Other Progression
-// 25 EET Progression Review Done
+// 12 Social Events        13 Session Updates Posted
+// 14 Feedback Review      15 Youth Insight Review 16 Labour Market Review
+// 17 Recruitment Period Active
+// 18 Entered Employment   19 Entered Education    20 Entered Training
+// 21 Interviews Secured   22 Work Experience      23 Other Progression
+// 24 EET Progression Review Done
 // ═══════════════════════════════════════════════════════════════
 function toNum(v) {
   if (v === '' || v === undefined || v === null) return 0;
@@ -214,18 +212,17 @@ function loadSheetData(text) {
       careerPlanningSessions: toNum(c[11]),
       socialEvents:           toNum(c[12]),
       sessionUpdates:         toNum(c[13]),
-      workshopDeliveryPct:    toNum(c[14]),
-      feedbackReviewDone:     toBool(c[15]),
-      youthInsightReview:     toBool(c[16]),
-      labourMarketReview:     toBool(c[17]),
-      recruitmentActive:      toBool(c[18]),
-      eetEmployment:          toNum(c[19]),
-      eetEducation:           toNum(c[20]),
-      eetTraining:            toNum(c[21]),
-      eetInterviews:          toNum(c[22]),
-      eetWorkExperience:      toNum(c[23]),
-      eetOther:               toNum(c[24]),
-      eetReviewDone:          toBool(c[25]),
+      feedbackReviewDone:     toBool(c[14]),
+      youthInsightReview:     toBool(c[15]),
+      labourMarketReview:     toBool(c[16]),
+      recruitmentActive:      toBool(c[17]),
+      eetEmployment:          toNum(c[18]),
+      eetEducation:           toNum(c[19]),
+      eetTraining:            toNum(c[20]),
+      eetInterviews:          toNum(c[21]),
+      eetWorkExperience:      toNum(c[22]),
+      eetOther:               toNum(c[23]),
+      eetReviewDone:          toBool(c[24]),
     };
   });
   return { weeks, data };
@@ -270,7 +267,6 @@ function aggregateMonth(mWeeks, data) {
     careerPlanningSessions: sum('careerPlanningSessions'),
     socialEvents:           sum('socialEvents'),
     sessionUpdates:         sum('sessionUpdates'),
-    workshopDeliveryPct:    Math.round(sum('workshopDeliveryPct') / rows.length), // average
     feedbackReviewDone:     rows.some(r => r.feedbackReviewDone),
     youthInsightReview:     rows.some(r => r.youthInsightReview),
     labourMarketReview:     rows.some(r => r.labourMarketReview),
