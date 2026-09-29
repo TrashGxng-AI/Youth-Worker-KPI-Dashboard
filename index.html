@@ -7,319 +7,157 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --canvas:   #060D1A;
-      --card:     #0C1628;
-      --card-h:   #0F1D34;
-      --cyan:     #00C2CB;
-      --white:    #E8F0FF;
-      --muted:    #6B80A0;
-      --border:   rgba(0,194,203,0.12);
-      --border-h: rgba(0,194,203,0.35);
-      --g:        #34D27A;
-      --a:        #F0B429;
-      --r:        #E05252;
-      --gr:       #4A5568;
-      --s-teal:   #00BCD4;
-      --s-amber:  #FF8F00;
-      --s-purple: #9C27B0;
-      --s-green:  #4CAF50;
-      --s-orange: #FF7043;
-      --s-grey:   #607D8B;
-      --radius:   6px;
-    }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--canvas);
-      background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,194,203,0.07) 0%, transparent 60%);
-      color: var(--white);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 16px; line-height: 1.5; min-height: 100vh;
-    }
-
-    /* TOP BAR */
-    .topbar {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(6,13,26,0.92);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px; height: 52px;
-    }
-    .wordmark { font-weight: 700; font-size: 17px; letter-spacing: 0.06em; color: var(--white); }
-    .wordmark em { color: var(--cyan); font-style: normal; text-shadow: 0 0 12px rgba(0,194,203,0.5); }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .icon-btn {
-      background: rgba(0,194,203,0.06); border: 1px solid var(--border); border-radius: var(--radius);
-      color: var(--muted); cursor: pointer; width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; transition: all 0.2s; text-decoration: none;
-    }
-    .icon-btn:hover { border-color: var(--border-h); color: var(--cyan); box-shadow: 0 0 8px rgba(0,194,203,0.15); }
-    .topbar-pill {
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(0,194,203,0.06); border: 1px solid var(--border);
-      border-radius: 20px; padding: 4px 12px;
-      font-size: 13px; font-weight: 500; color: var(--muted);
-    }
-    .topbar-pill span { color: var(--cyan); font-weight: 600; }
-    .status-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--g);
-      box-shadow: 0 0 6px var(--g); animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    /* PAGE HEADER */
-    .page-header {
-      padding: 28px 24px 20px; border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;
-    }
-    .eyebrow {
-      display: flex; align-items: center; gap: 8px;
-      font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
-      letter-spacing: 0.18em; text-transform: uppercase; color: var(--cyan); margin-bottom: 10px;
-    }
-    .eyebrow::before { content: ''; display: inline-block; width: 16px; height: 1px; background: var(--cyan); opacity: 0.6; }
-    .page-h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; color: var(--white); }
-    .page-sub { font-size: 15px; color: var(--muted); margin-top: 6px; }
-    .person-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
-    }
-    .avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: linear-gradient(135deg, #00BCD4, #4CAF50);
-      color: #000; font-weight: 700; font-size: 11px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .person-name { font-size: 15px; font-weight: 600; color: var(--white); }
-    .person-role { font-size: 13px; color: var(--muted); margin-top: 1px; }
-    .stat-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-    .stat-chip {
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      border-radius: 20px; padding: 5px 13px; font-size: 13px; font-weight: 500; color: var(--muted);
-    }
-    .stat-chip b { font-size: 15px; font-weight: 700; color: var(--white); }
-    .pip { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding-top: 4px; }
-    .seg-toggle {
-      display: flex; background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
-    }
-    .seg-btn {
-      background: none; border: none; font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--muted); cursor: pointer; padding: 8px 18px; transition: all 0.15s;
-    }
-    .seg-btn.active { background: var(--cyan); color: #000; box-shadow: 0 0 12px rgba(0,194,203,0.3); }
-    .seg-btn:not(.active):hover { color: var(--white); background: rgba(255,255,255,0.04); }
-    .week-nav {
-      display: flex; align-items: center; gap: 4px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03); border-radius: var(--radius); padding: 4px 8px;
-    }
-    .week-nav button {
-      background: none; border: none; color: var(--muted); cursor: pointer;
-      font-size: 14px; line-height: 1; padding: 2px 4px; transition: color 0.15s;
-    }
-    .week-nav button:hover:not(:disabled) { color: var(--cyan); }
-    .week-nav button:disabled { opacity: 0.25; cursor: default; }
-    .week-nav span {
-      font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500;
-      color: var(--white); min-width: 70px; text-align: center;
-    }
-
-    /* CONTENT */
-    .content { max-width: 1320px; margin: 0 auto; padding: 28px 24px 56px; }
-
-    /* HEALTH BANNER */
-    .health-banner {
-      border-radius: 10px; padding: 18px 24px; margin-bottom: 28px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      border: 1px solid;
-    }
-    .health-label { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px; }
-    .health-pct { font-size: 40px; font-weight: 700; line-height: 1; }
-    .health-sub { font-size: 13px; opacity: 0.8; }
-
-    /* SECTION */
-    .section-band { margin-bottom: 36px; }
-    .section-hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .section-title {
-      font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
-      letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
-      padding-bottom: 6px; border-bottom: 1px solid;
-    }
-    .section-count {
-      font-size: 12px; font-weight: 600; color: var(--muted);
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      border-radius: 10px; padding: 3px 9px;
-    }
-    .section-freq { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 12px; color: #E8F0FF; letter-spacing: 0.1em; text-transform: uppercase; }
-
-    /* KPI GRID */
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-
-    /* KPI CARD */
-    .kc {
-      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 18px 18px 16px 22px; position: relative;
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; overflow: hidden;
-    }
-    .kc:hover { border-color: var(--border-h); background: var(--card-h); box-shadow: 0 0 20px rgba(0,194,203,0.06), inset 0 1px 0 rgba(0,194,203,0.08); }
-    .kc::after {
-      content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .kc:hover::after { opacity: 0.5; }
-    .kc-bar { position: absolute; left: 0; top: 12px; bottom: 12px; width: 2px; border-radius: 0 2px 2px 0; opacity: 0.7; }
-    .kc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-    .kc-meta { flex: 1; min-width: 0; overflow: visible; }
-    .kc-id {
-      font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
-      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
-      word-break: break-word; margin-bottom: 4px;
-    }
-    .kc-target { font-family: 'DM Mono', monospace; font-size: 13px; color: rgba(200,215,240,0.85); letter-spacing: 0.04em; }
-    .rag {
-      display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      white-space: nowrap; flex-shrink: 0;
-    }
-    .rag-dot { font-size: 8px; }
-    .rg { color: var(--g); background: rgba(52,210,122,0.08); border: 1px solid rgba(52,210,122,0.2); }
-    .ra { color: var(--a); background: rgba(240,180,41,0.08); border: 1px solid rgba(240,180,41,0.2); }
-    .rr { color: var(--r); background: rgba(224,82,82,0.08); border: 1px solid rgba(224,82,82,0.2); }
-    .rn { color: var(--gr); background: rgba(74,85,104,0.1); border: 1px solid rgba(74,85,104,0.2); }
-    .kc-hero { font-size: 46px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--white); margin-bottom: 5px; }
-    .kc-hero.dim { color: rgba(255,255,255,0.12); }
-    .kc-sub { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.02em; }
-    .bool-yes { color: var(--g); font-weight: 600; font-size: 22px; }
-    .bool-no  { color: var(--r); font-weight: 600; font-size: 22px; }
-    .mo-tag {
-      display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
-      letter-spacing: 0.12em; text-transform: uppercase; color: rgba(107,128,160,0.45);
-      border: 1px solid rgba(107,128,160,0.15); border-radius: 3px; padding: 2px 6px;
-      margin-left: 6px; vertical-align: middle;
-    }
-    .kc-foot { display: flex; align-items: flex-end; justify-content: flex-end; margin-top: 4px; }
-    .spark { opacity: 0.25; transition: opacity 0.2s; }
-    .kc:hover .spark { opacity: 0.9; }
-
-    /* STATE CARDS */
-    .state-wrap { display: flex; align-items: center; justify-content: center; min-height: 60vh; }
-    .state-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 48px 36px; text-align: center; max-width: 460px; width: 100%;
-    }
-    .state-icon { font-size: 40px; margin-bottom: 16px; }
-    .state-title { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
-    .state-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
-    .state-btn {
-      display: inline-block; background: var(--cyan); color: #000; font-weight: 700;
-      font-size: 13px; padding: 10px 24px; border-radius: var(--radius);
-      text-decoration: none; transition: opacity 0.2s;
-    }
-    .state-btn:hover { opacity: 0.85; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .bar-fill { transition: width 0.4s ease; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .spin-ring {
-      width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--cyan);
-      border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px;
-    }
+    .spin { animation: spin 0.8s linear infinite; }
   </style>
 </head>
-<body>
+<body class="bg-gray-50">
 <div id="root"></div>
 
 <script type="text/babel">
 const { useState, useEffect, useMemo } = React;
 
 // ═══════════════════════════════════════════════════════════════
-// CONFIG — update these after deploying your Apps Script relay
+// STEP 1 — Apps Script relay URL (Deploy → Web app URL)
 // ═══════════════════════════════════════════════════════════════
-const SHEET_CSV_URL  = "https://script.google.com/macros/s/AKfycbyOtIrAYXfTDzP_DWM45EKGTJ8keONRnOYnQGTzKAa7wnTOybn009HdomLKMIrI7I4/exec";
+const SHEET_CSV_URL = "https://script.google.com/macros/s/AKfycbyOtIrAYXfTDzP_DWM45EKGTJ8keONRnOYnQGTzKAa7wnTOybn009HdomLKMIrI7I4/exec";
+
+// ═══════════════════════════════════════════════════════════════
+// STEP 2 — Normal edit link to the Google Sheet
+// (so the coach can click straight to the sheet from the dashboard)
+// ═══════════════════════════════════════════════════════════════
 const SHEET_EDIT_URL = "https://docs.google.com/spreadsheets/d/1-5OfNmZcC1xhv2TMValnV7piq640wtrLqdYEQUeCjjI/edit";
 
-// Per-week targets (used in week view; weekly keys are scaled in month view)
-const TARGETS = {
-  ypContacts:         8,   // 8 meaningful contacts per week
-  outreachActivities: 1,   // 1 external recruitment/outreach per week
-  caseloadSize:       25,  // tracked monthly — target ~25
-  jobClubSessions:    2,   // 2 per month
-  mockInterviews:     1,   // 1 per month
-  linkedinSessions:   1,   // 1 per month
-  portfolioSessions:  1,   // 1 per month
-  careerPlanningSessions: 1, // 1 per month
-  socialEvents:       2,   // 2 per month
-  workshopDeliveryPct: 90, // 90% of planned sessions delivered
-};
+// ═══════════════════════════════════════════════════════════════
+// COACH DETAILS — update when the role is filled
+// ═══════════════════════════════════════════════════════════════
+const COACH = { name: "Youth Development Coach", role: "Youth Development & Employability", initials: "YD" };
 
-// Keys that accumulate week-on-week and are scaled in month view
+// ═══════════════════════════════════════════════════════════════
+// TARGETS — only edit when benchmarks change
+// Weekly KPIs are per week (multiplied by number of weeks in month view)
+// Monthly KPIs are per month
+// ═══════════════════════════════════════════════════════════════
+const TARGETS = {
+  ypContacts:             8,   // meaningful contacts per week
+  outreachActivities:     1,   // external recruitment / outreach per week
+  caseloadSize:           25,  // active caseload
+  jobClubSessions:        2,   // per month
+  mockInterviews:         1,   // per month
+  linkedinSessions:       1,   // per month
+  portfolioSessions:      1,   // per month
+  careerPlanningSessions: 1,   // per month
+  socialEvents:           2,   // per month
+  workshopDeliveryPct:    90,  // % of planned sessions delivered
+};
 const WEEKLY_KEYS = ['ypContacts', 'outreachActivities'];
 
 // ═══════════════════════════════════════════════════════════════
-// SECTION / KPI DEFINITIONS
-// Column mapping must match the Google Sheet column order (B onwards)
+// SECTIONS — each shows as a card (like the marketing team cards)
 // ═══════════════════════════════════════════════════════════════
+// Sessions delivered in the period — used as the target for participant updates (KPI 5)
+function sessionsDelivered(d) {
+  return (d.jobClubSessions || 0) + (d.mockInterviews || 0) + (d.linkedinSessions || 0) +
+         (d.portfolioSessions || 0) + (d.careerPlanningSessions || 0) + (d.socialEvents || 0);
+}
+
+// KPI options:
+//   yesNo    — tick box KPI (done / not done)
+//   monthly  — shows the "monthly" tag
+//   track    — tracking only, no target or RAG (EET figures)
+//   targetFn — target worked out from other figures
+//   na       — returns true when the KPI doesn't apply this period (shows N/A)
 const SECTIONS = [
-  { title: 'Caseload & Contact', freq: 'Weekly', cv: '--s-teal', cr: '0,188,212', kpis: [
-    { id: 'YD01', label: 'Meaningful YP Contacts',       key: 'ypContacts',        unit: 'contacts' },
-    { id: 'YD02', label: 'CRM Same-Day Compliance',      key: 'crmCompliance',     yesNo: true      },
-    { id: 'YD03', label: 'Action Plans Updated',         key: 'actionPlansUpdated',yesNo: true      },
-    { id: 'YD04', label: 'New Applicant Follow-ups OK',  key: 'applicantFollowups',yesNo: true      },
+  { title: "Caseload & Contact", badge: "01", freq: "Weekly", kpis: [
+    { label: "Meaningful young person contacts",       key: "ypContacts",         unit: " contacts" },
+    { label: "All interactions on CRM same day",       key: "crmCompliance",      yesNo: true },
+    { label: "Action plans updated",                   key: "actionPlansUpdated", yesNo: true },
+    { label: "New applicants contacted within 3 days", key: "applicantFollowups", yesNo: true },
   ]},
-  { title: 'Recruitment & Outreach', freq: 'Weekly', cv: '--s-amber', cr: '255,143,0', kpis: [
-    { id: 'YD05', label: 'External Outreach Activities', key: 'outreachActivities', unit: 'activities' },
+  { title: "Employability Sessions", badge: "02", freq: "Monthly", kpis: [
+    { label: "Job Club sessions delivered",   key: "jobClubSessions",        unit: " sessions", monthly: true },
+    { label: "Mock interview session",        key: "mockInterviews",         unit: " sessions", monthly: true },
+    { label: "LinkedIn session",              key: "linkedinSessions",       unit: " sessions", monthly: true },
+    { label: "Portfolio development session", key: "portfolioSessions",      unit: " sessions", monthly: true },
+    { label: "Career planning session",       key: "careerPlanningSessions", unit: " sessions", monthly: true },
+    { label: "Participant updates posted after sessions", key: "sessionUpdates", unit: " updates",
+      targetFn: d => sessionsDelivered(d), na: d => sessionsDelivered(d) === 0 },
   ]},
-  { title: 'Employability Sessions', freq: 'Monthly', cv: '--s-purple', cr: '156,39,176', kpis: [
-    { id: 'YD06', label: 'Job Club Sessions',            key: 'jobClubSessions',        unit: 'sessions', mo: true },
-    { id: 'YD07', label: 'Mock Interview Sessions',      key: 'mockInterviews',          unit: 'sessions', mo: true },
-    { id: 'YD08', label: 'LinkedIn Sessions',            key: 'linkedinSessions',        unit: 'sessions', mo: true },
-    { id: 'YD09', label: 'Portfolio Dev Sessions',       key: 'portfolioSessions',       unit: 'sessions', mo: true },
-    { id: 'YD10', label: 'Career Planning Sessions',     key: 'careerPlanningSessions',  unit: 'sessions', mo: true },
+  { title: "Social Engagement", badge: "03", freq: "Monthly", kpis: [
+    { label: "Social / community events", key: "socialEvents", unit: " events", monthly: true },
   ]},
-  { title: 'Social Engagement', freq: 'Monthly', cv: '--s-green', cr: '76,175,80', kpis: [
-    { id: 'YD11', label: 'Social / Community Events',   key: 'socialEvents',      unit: 'events',  mo: true },
-    { id: 'YD12', label: 'Session Comms Posted',        key: 'sessionCommsPosted',yesNo: true,     mo: true },
+  { title: "Progression & EET", badge: "04", freq: "Monthly", kpis: [
+    { label: "Caseload progression reviewed",  key: "eetReviewDone",       yesNo: true, monthly: true },
+    { label: "Entered employment",             key: "eetEmployment",       track: true },
+    { label: "Entered education",              key: "eetEducation",        track: true },
+    { label: "Entered training",               key: "eetTraining",         track: true },
+    { label: "Interviews secured",             key: "eetInterviews",       track: true },
+    { label: "Work experience / placements",   key: "eetWorkExperience",   track: true },
+    { label: "Other meaningful progression",   key: "eetOther",            track: true },
   ]},
-  { title: 'Programme & Review', freq: 'Monthly', cv: '--s-orange', cr: '255,112,67', kpis: [
-    { id: 'YD13', label: 'Active Caseload Size',        key: 'caseloadSize',         unit: 'YPs',   mo: true },
-    { id: 'YD14', label: 'Workshop Delivery %',         key: 'workshopDeliveryPct',  unit: '%',     mo: true },
-    { id: 'YD15', label: 'Feedback Review Done',        key: 'feedbackReviewDone',   yesNo: true,   mo: true },
-    { id: 'YD16', label: 'Youth Insight Review Done',   key: 'youthInsightReview',   yesNo: true,   mo: true },
-    { id: 'YD17', label: 'Labour Market Review Done',   key: 'labourMarketReview',   yesNo: true,   mo: true },
+  { title: "Recruitment & Outreach", badge: "05", freq: "Weekly (recruitment periods)", kpis: [
+    { label: "External recruitment / outreach activities", key: "outreachActivities", unit: " activities",
+      na: d => !d.recruitmentActive && !d.outreachActivities },
+  ]},
+  { title: "Programme & Review", badge: "06", freq: "Monthly", kpis: [
+    { label: "Labour market / opportunities review",   key: "labourMarketReview",  yesNo: true, monthly: true },
+    { label: "Workshop sessions delivered as planned", key: "workshopDeliveryPct", unit: "%",   monthly: true },
+    { label: "Participant feedback reviewed",          key: "feedbackReviewDone",  yesNo: true, monthly: true },
+    { label: "Youth insight review held",              key: "youthInsightReview",  yesNo: true, monthly: true },
   ]},
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// CSV PARSER
+// RAG helpers
 // ═══════════════════════════════════════════════════════════════
-function parseCSV(text) {
-  const rows = []; let row = [], cur = '', inQ = false;
-  const t = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  for (let i = 0; i < t.length; i++) {
-    const ch = t[i];
-    if (inQ) {
-      if (ch === '"') { if (t[i+1]==='"') { cur+='"'; i++; } else { inQ=false; } }
-      else cur += ch;
-    } else {
-      if      (ch==='"')  { inQ=true; }
-      else if (ch===',')  { row.push(cur.trim()); cur=''; }
-      else if (ch==='\n') { row.push(cur.trim()); rows.push(row); row=[]; cur=''; }
-      else cur += ch;
-    }
-  }
-  row.push(cur.trim());
-  if (row.some(c=>c!=='')) rows.push(row);
-  return rows;
+const RAG = {
+  green: { bg: "bg-green-100", text: "text-green-800", bar: "bg-green-500",  label: "On Track"  },
+  amber: { bg: "bg-yellow-100",text: "text-yellow-800",bar: "bg-yellow-400", label: "Close"     },
+  red:   { bg: "bg-red-100",   text: "text-red-800",   bar: "bg-red-500",    label: "Off Track" },
+  grey:  { bg: "bg-gray-100",  text: "text-gray-500",  bar: "bg-gray-200",   label: "N/A"       },
+};
+function getRag(p) {
+  if (p === null || p === undefined) return "grey";
+  if (p >= 85) return "green";
+  if (p >= 60) return "amber";
+  return "red";
+}
+function calcPct(actual, target) {
+  if (!target || actual === null || actual === undefined) return null;
+  return Math.min(Math.round((actual / target) * 100), 150);
+}
+function kpiTarget(k, d, targets) { return k.targetFn ? k.targetFn(d) : targets[k.key]; }
+function kpiRag(k, d, targets) {
+  if (k.track) return null;                 // tracking only — not scored
+  if (k.na && k.na(d)) return "grey";       // doesn't apply this period
+  const v = d[k.key];
+  if (k.yesNo) return v ? "green" : "red";
+  return getRag(calcPct(v, kpiTarget(k, d, targets)));
 }
 
-function toNum(v)  { return (v===''||v==null) ? 0 : (Number(v)||0); }
+// ═══════════════════════════════════════════════════════════════
+// CSV parser
+// Sheet has 2 header rows (title + column names) then data.
+// Column order (A=0 … R=17):
+//  0 Week                  1 YP Contacts           2 CRM Same-Day Compliance
+//  3 Action Plans Updated  4 New Applicant F-ups   5 External Outreach
+//  6 Active Caseload Size  7 Job Club              8 Mock Interview
+//  9 LinkedIn             10 Portfolio            11 Career Planning
+// 12 Social Events        13 Session Updates Posted 14 Workshop Delivery %
+// 15 Feedback Review      16 Youth Insight Review 17 Labour Market Review
+// 18 Recruitment Period Active
+// 19 Entered Employment   20 Entered Education    21 Entered Training
+// 22 Interviews Secured   23 Work Experience      24 Other Progression
+// 25 EET Progression Review Done
+// ═══════════════════════════════════════════════════════════════
+function toNum(v) {
+  if (v === '' || v === undefined || v === null) return 0;
+  return Number(v) || 0;
+}
 function toBool(v) {
   // TRUE / yes / y / ticked checkbox = done. Any number above 0 also counts as done.
   if (v === '' || v == null) return false;
@@ -329,46 +167,78 @@ function toBool(v) {
   return !isNaN(n) && n > 0;
 }
 
+// Full CSV parser — handles quoted cells that contain commas or newlines.
+function parseCSV(text) {
+  const rows = [];
+  let row = [], cur = '', inQ = false;
+  const t = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i];
+    if (inQ) {
+      if (ch === '"') {
+        if (t[i + 1] === '"') { cur += '"'; i++; }
+        else { inQ = false; }
+      } else { cur += ch; }
+    } else {
+      if      (ch === '"')  { inQ = true; }
+      else if (ch === ',')  { row.push(cur.trim()); cur = ''; }
+      else if (ch === '\n') { row.push(cur.trim()); rows.push(row); row = []; cur = ''; }
+      else { cur += ch; }
+    }
+  }
+  row.push(cur.trim());
+  if (row.some(c => c !== '')) rows.push(row);
+  return rows;
+}
+
 function loadSheetData(text) {
   const rows = parseCSV(text);
-  // Row 0 = title, Row 1 = headers, Row 2+ = data
+  // rows[0] = title, rows[1] = column headers — skip both
   const dataRows = rows.slice(2).filter(r => r[0]?.trim());
   const weeks = [], data = {};
   dataRows.forEach(c => {
-    const wk = c[0]?.trim(); if (!wk) return;
+    const wk = c[0]?.trim();
+    if (!wk) return;
     weeks.push(wk);
     data[wk] = {
-      // Column B onwards — must match sheet column order exactly
-      ypContacts:              toNum(c[1]),
-      crmCompliance:           toBool(c[2]),
-      actionPlansUpdated:      toBool(c[3]),
-      applicantFollowups:      toBool(c[4]),
-      outreachActivities:      toNum(c[5]),
-      caseloadSize:            toNum(c[6]),
-      jobClubSessions:         toNum(c[7]),
-      mockInterviews:          toNum(c[8]),
-      linkedinSessions:        toNum(c[9]),
-      portfolioSessions:       toNum(c[10]),
-      careerPlanningSessions:  toNum(c[11]),
-      socialEvents:            toNum(c[12]),
-      sessionCommsPosted:      toBool(c[13]),
-      workshopDeliveryPct:     toNum(c[14]),
-      feedbackReviewDone:      toBool(c[15]),
-      youthInsightReview:      toBool(c[16]),
-      labourMarketReview:      toBool(c[17]),
+      ypContacts:             toNum(c[1]),
+      crmCompliance:          toBool(c[2]),
+      actionPlansUpdated:     toBool(c[3]),
+      applicantFollowups:     toBool(c[4]),
+      outreachActivities:     toNum(c[5]),
+      caseloadSize:           toNum(c[6]),
+      jobClubSessions:        toNum(c[7]),
+      mockInterviews:         toNum(c[8]),
+      linkedinSessions:       toNum(c[9]),
+      portfolioSessions:      toNum(c[10]),
+      careerPlanningSessions: toNum(c[11]),
+      socialEvents:           toNum(c[12]),
+      sessionUpdates:         toNum(c[13]),
+      workshopDeliveryPct:    toNum(c[14]),
+      feedbackReviewDone:     toBool(c[15]),
+      youthInsightReview:     toBool(c[16]),
+      labourMarketReview:     toBool(c[17]),
+      recruitmentActive:      toBool(c[18]),
+      eetEmployment:          toNum(c[19]),
+      eetEducation:           toNum(c[20]),
+      eetTraining:            toNum(c[21]),
+      eetInterviews:          toNum(c[22]),
+      eetWorkExperience:      toNum(c[23]),
+      eetOther:               toNum(c[24]),
+      eetReviewDone:          toBool(c[25]),
     };
   });
   return { weeks, data };
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MONTH UTILITIES
+// Month helpers
 // ═══════════════════════════════════════════════════════════════
 const MON      = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MON_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function getMonthKey(lbl) {
-  // Accepts "16 Jun", "16 June", "16 june" — always returns 3-letter key or null
+  // Accepts "16 Jun", "16 June", "16 june" — returns 3-letter key or null
   const p = lbl.trim().split(/\s+/);
   if (p.length < 2) return null;
   const m = p[p.length - 1];
@@ -376,371 +246,429 @@ function getMonthKey(lbl) {
   const fi = MON_FULL.findIndex(n => n.toLowerCase() === m.toLowerCase());
   return fi >= 0 ? MON[fi] : null;
 }
-
+function monthName(mk) { const i = MON.indexOf(mk); return i >= 0 ? MON_FULL[i] : mk; }
 function getMonths(weeks) {
   const seen = new Set(), out = [];
   for (const w of weeks) { const m = getMonthKey(w); if (m && !seen.has(m)) { seen.add(m); out.push(m); } }
   return out;
 }
-
-function weeksForMonth(weeks, mk) { return weeks.filter(w => getMonthKey(w) === mk); }
-
 function aggregateMonth(mWeeks, data) {
   const rows = mWeeks.map(w => data[w]).filter(Boolean);
   if (!rows.length) return null;
-  const sum = k => rows.reduce((s,r) => s+(r[k]||0), 0);
+  const sum = k => rows.reduce((s, r) => s + (r[k] || 0), 0);
   return {
-    ypContacts:              sum('ypContacts'),
-    crmCompliance:           rows.every(r => r.crmCompliance),
-    actionPlansUpdated:      rows.every(r => r.actionPlansUpdated),
-    applicantFollowups:      rows.every(r => r.applicantFollowups),
-    outreachActivities:      sum('outreachActivities'),
-    caseloadSize:            rows[rows.length-1].caseloadSize, // last week's value
-    jobClubSessions:         sum('jobClubSessions'),
-    mockInterviews:          sum('mockInterviews'),
-    linkedinSessions:        sum('linkedinSessions'),
-    portfolioSessions:       sum('portfolioSessions'),
-    careerPlanningSessions:  sum('careerPlanningSessions'),
-    socialEvents:            sum('socialEvents'),
-    sessionCommsPosted:      rows.some(r => r.sessionCommsPosted),
-    workshopDeliveryPct:     Math.round(sum('workshopDeliveryPct') / rows.length), // average
-    feedbackReviewDone:      rows.some(r => r.feedbackReviewDone),
-    youthInsightReview:      rows.some(r => r.youthInsightReview),
-    labourMarketReview:      rows.some(r => r.labourMarketReview),
-    _n:                      rows.length,
+    ypContacts:             sum('ypContacts'),
+    crmCompliance:          rows.every(r => r.crmCompliance),       // must be done every week
+    actionPlansUpdated:     rows.every(r => r.actionPlansUpdated),
+    applicantFollowups:     rows.every(r => r.applicantFollowups),
+    outreachActivities:     sum('outreachActivities'),
+    caseloadSize:           rows[rows.length - 1].caseloadSize,     // latest week's figure
+    jobClubSessions:        sum('jobClubSessions'),
+    mockInterviews:         sum('mockInterviews'),
+    linkedinSessions:       sum('linkedinSessions'),
+    portfolioSessions:      sum('portfolioSessions'),
+    careerPlanningSessions: sum('careerPlanningSessions'),
+    socialEvents:           sum('socialEvents'),
+    sessionUpdates:         sum('sessionUpdates'),
+    workshopDeliveryPct:    Math.round(sum('workshopDeliveryPct') / rows.length), // average
+    feedbackReviewDone:     rows.some(r => r.feedbackReviewDone),
+    youthInsightReview:     rows.some(r => r.youthInsightReview),
+    labourMarketReview:     rows.some(r => r.labourMarketReview),
+    recruitmentActive:      rows.some(r => r.recruitmentActive),
+    eetEmployment:          sum('eetEmployment'),
+    eetEducation:           sum('eetEducation'),
+    eetTraining:            sum('eetTraining'),
+    eetInterviews:          sum('eetInterviews'),
+    eetWorkExperience:      sum('eetWorkExperience'),
+    eetOther:               sum('eetOther'),
+    eetReviewDone:          rows.some(r => r.eetReviewDone),
+    _n:                     rows.length,
   };
 }
-
 function monthTargets(n) {
-  return { ...TARGETS,
-    ypContacts:         TARGETS.ypContacts * n,
-    outreachActivities: TARGETS.outreachActivities * n,
-  };
+  const t = { ...TARGETS };
+  WEEKLY_KEYS.forEach(k => { t[k] = TARGETS[k] * n; });
+  return t;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// RAG + SPARKLINE HELPERS
+// Components
 // ═══════════════════════════════════════════════════════════════
-function calcPct(actual, target) {
-  if (target==null || actual==null) return null;
-  return Math.min(Math.round((actual/target)*100), 150);
-}
-function getRag(p) { return p==null?'n': p>=85?'g': p>=60?'a':'r'; }
-function ragLabel(r) {
-  return r==='g'?'▲ On Track': r==='a'?'● Close': r==='r'?'▼ Off Track':'— No Data';
-}
 
-function sparkPoints(vals) {
-  if (!vals || vals.length < 2) return null;
-  const w=64,h=20, mn=Math.min(...vals), mx=Math.max(...vals), rng=mx-mn||1;
-  return vals.map((v,i)=>`${Math.round(i/(vals.length-1)*w)},${Math.round(h-((v-mn)/rng)*(h-2)+1)}`).join(' ');
-}
-
-// ═══════════════════════════════════════════════════════════════
-// KPI CARD
-// ═══════════════════════════════════════════════════════════════
-function KpiCard({ kpi, d, targets, cv, sparkVals, view }) {
-  const { id, label, key, unit, yesNo, mo } = kpi;
-  const actual  = d ? d[key] : null;
-  const target  = targets[key];
-  const isMonth = view === 'month';
-
-  const tgtLbl = yesNo
-    ? `target: yes / ${mo ? 'month' : 'week'}`
-    : WEEKLY_KEYS.includes(key) && isMonth
-      ? `target: ${target} / month`
-      : `target: ${target}${unit ? ' '+unit : ''} / ${mo ? 'month' : 'week'}`;
-
-  let rc, rl;
-  if (yesNo) {
-    rc = actual ? 'rg' : 'rr';
-    rl = actual ? '▲ On Track' : '▼ Off Track';
-  } else {
-    const r = getRag(calcPct(actual, target));
-    rc = 'r'+r; rl = ragLabel(r);
-  }
-
-  let hero, sub;
-  if (yesNo) {
-    hero = actual
-      ? <div style={{fontSize:'20px',paddingTop:'6px',marginBottom:'6px'}}><span className="bool-yes">✓ Completed</span></div>
-      : <div style={{fontSize:'20px',paddingTop:'6px',marginBottom:'6px'}}><span className="bool-no">✗ Missed</span></div>;
-    sub = actual ? (mo?'done this month':'done this week') : (mo?'not done this month':'not done this week');
-  } else if (actual == null) {
-    hero = <div className="kc-hero dim">—</div>;
-    sub  = 'no data entered';
-  } else {
-    hero = <div className="kc-hero">{actual}{unit==='%'?'%':''}</div>;
-    sub  = unit && unit!=='%' ? `${unit} ${isMonth?'this month':'this week'}` : '';
-  }
-
-  const pts = !yesNo && sparkVals ? sparkPoints(sparkVals) : null;
-
+function StatCard({ emoji, label, value, target, sub }) {
+  const p = calcPct(value, target);
+  const key = getRag(p);
+  const col = key === "green" ? "text-green-400" : key === "amber" ? "text-yellow-400" : "text-red-400";
   return (
-    <div className="kc">
-      <div className="kc-bar" style={{background:`var(${cv})`}}></div>
-      <div className="kc-top">
-        <div className="kc-meta">
-          <div className="kc-id">{id} · {label}{mo && <span className="mo-tag">mo</span>}</div>
-          <div className="kc-target">{tgtLbl}</div>
+    <div className="bg-black rounded-2xl px-5 py-4 flex items-center justify-between flex-1">
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-base">{emoji}</span>
+          <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">{label}</span>
         </div>
-        <div className={`rag ${rc}`}><span className="rag-dot">●</span> {rl}</div>
+        <div className="text-white font-black text-2xl leading-none">{value}</div>
+        <div className="text-gray-500 text-xs mt-1">{sub}</div>
       </div>
-      {hero}
-      {sub && <div className="kc-sub">{sub}</div>}
-      {pts && (
-        <div className="kc-foot">
-          <svg className="spark" width="64" height="20" viewBox="0 0 64 20">
-            <polyline points={pts} fill="none" stroke={`var(${cv})`} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/>
-          </svg>
+      <div className={`text-right ${col}`}>
+        <div className="text-xl font-black leading-none">{p ?? 0}%</div>
+        <div className="text-xs font-semibold mt-0.5">of {target} target</div>
+      </div>
+    </div>
+  );
+}
+
+function KpiRow({ label, actual, target, unit = "", yesNo = false, val = null, monthly = false, na = false, track = false }) {
+  // Tracking-only row (EET figures) — number, no target or RAG
+  if (track) {
+    return (
+      <div className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0">
+        <div className="flex-1 min-w-0">
+          <span className="text-sm text-gray-700">{label}</span>
+        </div>
+        <span className="text-lg font-black text-gray-900 w-10 text-right">{actual ?? 0}</span>
+        <span className="text-xs px-2 py-0.5 rounded-full font-semibold whitespace-nowrap bg-gray-100 text-gray-500">Tracking</span>
+      </div>
+    );
+  }
+  let p, display;
+  if (na) {
+    p = null;
+    display = "— not applicable this period";
+  } else if (yesNo) {
+    p = val ? 100 : 0;
+    display = val ? "✓  Done" : "✗  Not done";
+  } else {
+    p = calcPct(actual, target);
+    display = actual !== null && actual !== undefined ? `${actual}${unit}  /  ${target}${unit}` : "— not entered";
+  }
+  const key = getRag(p);
+  const c = RAG[key];
+  return (
+    <div className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-sm text-gray-700">{label}</span>
+          {monthly && <span className="text-xs text-gray-400 bg-gray-100 rounded px-1.5 py-0.5">monthly</span>}
+        </div>
+        <div className={`text-xs font-semibold mt-0.5 ${c.text}`}>{display}</div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <div className="w-16 h-1.5 rounded-full bg-gray-100">
+          <div className={`h-1.5 rounded-full bar-fill ${c.bar}`} style={{ width: `${Math.min(p ?? 0, 100)}%` }} />
+        </div>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold whitespace-nowrap ${c.bg} ${c.text}`}>{c.label}</span>
+      </div>
+    </div>
+  );
+}
+
+function SectionCard({ sec, d, targets }) {
+  const [open, setOpen] = useState(true);
+  // Only score KPIs that apply (skip tracking-only and N/A)
+  const rags = sec.kpis.map(k => kpiRag(k, d, targets)).filter(r => r && r !== "grey");
+  const onTrack = rags.filter(r => r === "green").length;
+  const overall = !rags.length ? "grey" : rags.includes("red") ? "red" : rags.includes("amber") ? "amber" : "green";
+  const c = RAG[overall];
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <button onClick={() => setOpen(o => !o)}
+        className="w-full bg-black px-5 py-4 flex items-center justify-between gap-3 text-left hover:bg-gray-900 transition-colors">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-yellow-400 flex items-center justify-center text-black font-black text-sm shrink-0">{sec.badge}</div>
+          <div>
+            <div className="text-white font-bold text-sm leading-tight">{sec.title}</div>
+            <div className="text-gray-400 text-xs mt-0.5">{sec.freq} · {sec.kpis.length} KPIs</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={`text-xs font-bold px-2 py-1 rounded-full ${c.bg} ${c.text}`}>{rags.length ? `${onTrack}/${rags.length} on track` : "N/A"}</span>
+          <span className="text-gray-600 text-sm">{open ? "▲" : "▼"}</span>
+        </div>
+      </button>
+      {open && (
+        <div className="px-5 py-2">
+          {sec.kpis.map((k, i) => (
+            <KpiRow key={i} label={k.label} unit={k.unit} monthly={k.monthly}
+              yesNo={k.yesNo} val={k.yesNo ? d[k.key] : null} track={k.track}
+              na={!!(k.na && k.na(d))}
+              actual={k.yesNo ? null : d[k.key]} target={kpiTarget(k, d, targets)} />
+          ))}
         </div>
       )}
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// SECTION BAND
-// ═══════════════════════════════════════════════════════════════
-function SectionBand({ sec, d, targets, allData, weeks, view }) {
-  if (!d) return null;
+function Health({ d, targets, view }) {
+  // Week view: weekly KPIs only. Month view: every KPI.
+  // Skips tracking-only and not-applicable KPIs
+  const rags = SECTIONS
+    .filter(s => view === "month" || s.freq.startsWith("Weekly"))
+    .flatMap(s => s.kpis)
+    .map(k => kpiRag(k, d, targets))
+    .filter(r => r && r !== "grey");
+  const met = rags.filter(r => r === "green").length;
+  const total = rags.length;
+  const pct = total ? Math.round((met / total) * 100) : 0;
+  const key = pct >= 85 ? "green" : pct >= 60 ? "amber" : "red";
+  const c = RAG[key];
   return (
-    <div className="section-band">
-      <div className="section-hdr">
-        <div className="section-title" style={{borderColor:`rgba(${sec.cr},0.4)`,color:`rgba(${sec.cr},0.85)`}}>{sec.title}</div>
-        <div className="section-count">{sec.kpis.length} KPIs</div>
-        <div className="section-freq">{sec.freq}</div>
-      </div>
-      <div className="kpi-grid">
-        {sec.kpis.map(kpi => {
-          const sv = !kpi.yesNo && weeks.length >= 2
-            ? weeks.slice(-8).map(w => allData[w]?.[kpi.key] ?? 0)
-            : null;
-          return <KpiCard key={kpi.id} kpi={kpi} d={d} targets={targets} cv={sec.cv} sparkVals={sv} view={view} />;
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
-// HEALTH BANNER (week view — weekly KPIs only)
-// ═══════════════════════════════════════════════════════════════
-function HealthBanner({ d, targets }) {
-  if (!d) return null;
-  const checks = [
-    d.ypContacts >= targets.ypContacts,
-    d.outreachActivities >= targets.outreachActivities,
-    d.crmCompliance,
-    d.actionPlansUpdated,
-    d.applicantFollowups,
-  ];
-  const met=checks.filter(Boolean).length, pct=Math.round((met/checks.length)*100);
-  const col  = pct>=85?'var(--g)':pct>=60?'var(--a)':'var(--r)';
-  const bcol = pct>=85?'rgba(52,210,122,0.2)':pct>=60?'rgba(240,180,41,0.2)':'rgba(224,82,82,0.2)';
-  const bg   = pct>=85?'rgba(52,210,122,0.06)':pct>=60?'rgba(240,180,41,0.06)':'rgba(224,82,82,0.06)';
-  return (
-    <div className="health-banner" style={{background:bg,borderColor:bcol,color:col}}>
+    <div className={`rounded-2xl px-5 py-4 flex items-center justify-between ${c.bg}`}>
       <div>
-        <div className="health-label">Weekly Activity Health</div>
-        <div className="health-pct">{pct}%</div>
-        <div className="health-sub">{met} of {checks.length} weekly targets hit</div>
+        <div className={`text-xs font-bold uppercase tracking-wider ${c.text}`}>{view === "month" ? "Month Health" : "Week Health"}</div>
+        <div className={`text-3xl font-black mt-1 ${c.text}`}>{pct}%</div>
+        <div className={`text-xs mt-1 ${c.text} opacity-80`}>
+          {met} of {total} {view === "month" ? "KPIs met this month" : "weekly KPIs met this week"}
+        </div>
       </div>
-      <svg viewBox="0 0 36 36" style={{width:'64px',height:'64px',transform:'rotate(-90deg)',flexShrink:0}}>
-        <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="3.5"/>
+      <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90">
+        <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="3.5"/>
         <circle cx="18" cy="18" r="15.9" fill="none" strokeWidth="3.5"
-          strokeDasharray={`${pct} ${100-pct}`} strokeLinecap="round" stroke={col}/>
+          strokeDasharray={`${pct} ${100 - pct}`} strokeLinecap="round"
+          className={key === "green" ? "stroke-green-600" : key === "amber" ? "stroke-yellow-500" : "stroke-red-500"}
+        />
       </svg>
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// STAT CHIPS
-// ═══════════════════════════════════════════════════════════════
-function StatChips({ d, targets }) {
-  if (!d) return null;
-  const cnt = {g:0,a:0,r:0,n:0};
-  SECTIONS.forEach(sec => sec.kpis.forEach(kpi => {
-    const actual = d[kpi.key];
-    const r = kpi.yesNo ? (actual?'g':'r') : getRag(calcPct(actual, targets[kpi.key]));
-    cnt[r]++;
-  }));
+function HowToUpdate() {
   return (
-    <div className="stat-row">
-      <div className="stat-chip"><div className="pip" style={{background:'var(--g)',boxShadow:'0 0 4px var(--g)'}}></div><b>{cnt.g}</b>&nbsp;On Track</div>
-      <div className="stat-chip"><div className="pip" style={{background:'var(--a)',boxShadow:'0 0 4px var(--a)'}}></div><b>{cnt.a}</b>&nbsp;Close</div>
-      <div className="stat-chip"><div className="pip" style={{background:'var(--r)',boxShadow:'0 0 4px var(--r)'}}></div><b>{cnt.r}</b>&nbsp;Off Track</div>
-      {cnt.n>0 && <div className="stat-chip"><div className="pip" style={{background:'var(--gr)'}}></div><b>{cnt.n}</b>&nbsp;No Data</div>}
+    <div className="space-y-4 max-w-xl">
+
+      {/* Big sheet button */}
+      <a href={SHEET_EDIT_URL} target="_blank" rel="noopener noreferrer"
+        className="flex items-center justify-between bg-green-600 hover:bg-green-700 active:bg-green-800 transition-colors text-white rounded-2xl px-6 py-5 no-underline">
+        <div>
+          <div className="font-black text-base leading-tight">📊  Open KPI Sheet</div>
+          <div className="text-green-200 text-xs mt-1">Fill in this week's numbers → dashboard updates automatically</div>
+        </div>
+        <span className="text-2xl ml-4">→</span>
+      </a>
+
+      {/* How it works */}
+      <div className="bg-black text-white rounded-2xl p-5 space-y-4">
+        <p className="text-yellow-400 font-black text-sm uppercase tracking-widest">How it works</p>
+        {[
+          ["📋", "Coach fills the Google Sheet", "Each week the coach adds one row with that week's numbers — no code, no logins."],
+          ["⚡", "Dashboard updates automatically", "The dashboard reads directly from the sheet. Refresh the page after the sheet is filled in."],
+          ["📅", "Week or month view", "Use the Week / Month switch at the top to see a single week or the whole month added up."],
+        ].map(([icon, title, desc]) => (
+          <div key={title} className="flex gap-3 text-sm">
+            <span className="text-base shrink-0">{icon}</span>
+            <div>
+              <span className="text-yellow-400 font-semibold">{title}: </span>
+              <span className="text-gray-300">{desc}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Weekly routine */}
+      <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-3">
+        <p className="font-bold text-sm text-gray-800">Every week (takes ~2 mins)</p>
+        <ol className="text-sm text-gray-600 space-y-2 list-decimal list-inside">
+          <li>Open the Google Sheet using the button above.</li>
+          <li>Go to the next blank row and type the week date in column A (e.g. 28/09/26).</li>
+          <li>Type the counts in the number columns and tick the boxes for anything done.</li>
+          <li>Tick <strong>Recruitment Period Active</strong> in weeks when the programme is recruiting — outreach is only scored in those weeks.</li>
+          <li>Monthly KPIs (sessions, events, reviews, EET progressions) — enter them in the week they happened.</li>
+          <li>Hover over any column header in the sheet to see exactly what to count.</li>
+          <li>Done — refresh the dashboard to see the update.</li>
+        </ol>
+      </div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MAIN APP
+// Main App
 // ═══════════════════════════════════════════════════════════════
 function App() {
-  const [weeks,  setWeeks]  = useState([]);
-  const [data,   setData]   = useState({});
-  const [week,   setWeek]   = useState(null);
-  const [month,  setMonth]  = useState(null);
-  const [view,   setView]   = useState('week');
-  const [status, setStatus] = useState('loading');
+  const [weeks, setWeeks]   = useState([]);
+  const [data, setData]     = useState({});
+  const [week, setWeek]     = useState(null);
+  const [month, setMonth]   = useState(null);
+  const [view, setView]     = useState("week");
+  const [tab, setTab]       = useState("output");
+  const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    if (!SHEET_CSV_URL) { setStatus('nourl'); return; }
+    if (!SHEET_CSV_URL) { setStatus("nourl"); return; }
     fetch(SHEET_CSV_URL)
-      .then(r => { if (!r.ok) throw new Error('http'); return r.text(); })
+      .then(r => { if (!r.ok) throw new Error("fetch"); return r.text(); })
       .then(text => {
-        const { weeks:w, data:d } = loadSheetData(text);
-        if (!w.length) throw new Error('empty');
-        setWeeks(w); setData(d);
-        const MIDX = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        const { weeks: w, data: dd } = loadSheetData(text);
+        if (!w.length) throw new Error("empty");
+        setWeeks(w);
+        setData(dd);
+        // Default to the most recent week on or before today
         const today = new Date(); today.setHours(0,0,0,0);
         const toDate = lbl => {
-          const p = lbl.trim().split(/\s+/); if (p.length < 2) return null;
-          const monStr = p[p.length-1];
-          const monIdx = MON.indexOf(monStr) >= 0 ? MON.indexOf(monStr)
-            : MON_FULL.findIndex(n => n.toLowerCase()===monStr.toLowerCase());
-          if (monIdx < 0) return null;
+          const mk = getMonthKey(lbl);
+          if (!mk) return null;
           const yr = today.getFullYear();
-          const dt = new Date(yr, monIdx, parseInt(p[0],10));
-          if (dt-today > 183*86400000) dt.setFullYear(yr-1);
+          const dt = new Date(yr, MON.indexOf(mk), parseInt(lbl, 10));
+          if (dt - today > 183 * 86400000) dt.setFullYear(yr - 1);
           return dt;
         };
         let best = w[0];
-        for (const wk of w) { const dt=toDate(wk); if (dt && dt<=today) best=wk; }
+        for (const wk of w) { const dt = toDate(wk); if (dt && dt <= today) best = wk; }
         setWeek(best);
         setMonth(getMonthKey(best));
-        setStatus('ok');
+        setStatus("ok");
       })
-      .catch(e => setStatus(e.message==='empty'?'empty':'error'));
+      .catch(e => setStatus(e.message === "empty" ? "empty" : "error"));
   }, []);
 
   const months = useMemo(() => getMonths(weeks), [weeks]);
 
-  const currentData = useMemo(() => {
-    if (view==='week') return week ? data[week] : null;
-    if (view==='month' && month) return aggregateMonth(weeksForMonth(weeks, month), data);
-    return null;
+  const d = useMemo(() => {
+    if (view === "week") return week ? data[week] : null;
+    return month ? aggregateMonth(weeks.filter(w => getMonthKey(w) === month), data) : null;
   }, [view, week, month, weeks, data]);
 
-  const targets = useMemo(() => (
-    view==='month' && currentData?._n ? monthTargets(currentData._n) : TARGETS
-  ), [view, currentData]);
+  const targets = view === "month" && d?._n ? monthTargets(d._n) : TARGETS;
 
-  const wIdx = weeks.indexOf(week),  mIdx = months.indexOf(month);
-  function prevWeek()  { if (wIdx>0)              setWeek(weeks[wIdx-1]);   }
-  function nextWeek()  { if (wIdx<weeks.length-1)  setWeek(weeks[wIdx+1]);   }
-  function prevMonth() { if (mIdx>0)              setMonth(months[mIdx-1]); }
-  function nextMonth() { if (mIdx<months.length-1) setMonth(months[mIdx+1]); }
-  const onPrev  = view==='week' ? prevWeek  : prevMonth;
-  const onNext  = view==='week' ? nextWeek  : nextMonth;
-  const canPrev = view==='week' ? wIdx>0              : mIdx>0;
-  const canNext = view==='week' ? wIdx<weeks.length-1 : mIdx<months.length-1;
-  const navLbl  = view==='week' ? week                : month;
-
-  const kpiCount = SECTIONS.reduce((s,sec) => s+sec.kpis.length, 0);
-  const h1  = view==='week'  ? `Week of ${week||'…'}` : `${month||'…'} — Monthly View`;
-  const sub = view==='week'
-    ? `w/c ${week||''} · ${kpiCount} metrics across ${SECTIONS.length} sections`
-    : `${currentData?._n??'?'} weeks of data · ${kpiCount} metrics · aggregated totals`;
-
-  if (status==='loading') return (
-    <div className="state-wrap">
-      <div className="state-card">
-        <div className="spin-ring"></div>
-        <div className="state-title">Loading…</div>
-        <div className="state-sub">Fetching from Google Sheets</div>
-      </div>
-    </div>
-  );
-  if (status==='nourl') return (
-    <div className="state-wrap">
-      <div className="state-card">
-        <div className="state-icon">📊</div>
-        <div className="state-title">Sheet Not Connected</div>
-        <div className="state-sub">Paste your Apps Script web app URL into SHEET_CSV_URL at the top of this file.</div>
-      </div>
-    </div>
-  );
-  if (status==='error') return (
-    <div className="state-wrap">
-      <div className="state-card">
-        <div className="state-icon">⚠️</div>
-        <div className="state-title">Connection Error</div>
-        <div className="state-sub">Couldn't reach the Google Sheet. Check your Apps Script URL is deployed as a public web app.</div>
-        <a href={SHEET_EDIT_URL||'#'} target="_blank" rel="noopener noreferrer" className="state-btn">Open Google Sheet →</a>
-      </div>
-    </div>
-  );
-  if (status==='empty') return (
-    <div className="state-wrap">
-      <div className="state-card">
-        <div className="state-icon">📋</div>
-        <div className="state-title">No Data Yet</div>
-        <div className="state-sub">Sheet connected — add at least one week row and refresh.</div>
-        <a href={SHEET_EDIT_URL||'#'} target="_blank" rel="noopener noreferrer" className="state-btn">Open Sheet →</a>
-      </div>
-    </div>
-  );
+  // Navigation (weeks or months depending on view)
+  const list  = view === "week" ? weeks : months;
+  const cur   = view === "week" ? week  : month;
+  const setCur = view === "week" ? setWeek : setMonth;
+  const idx   = list.indexOf(cur);
+  const label = view === "week" ? `w/c ${week || ""}` : monthName(month || "");
 
   return (
-    <>
-      <header className="topbar">
-        <div style={{display:'flex',alignItems:'center',gap:'14px'}}>
-          <div className="wordmark">TRASH <em>|</em> G✕NG</div>
-          <div className="topbar-pill">
-            <div className="status-dot"></div>
-            <span>Live</span> · Youth Development
-          </div>
-        </div>
-        <div className="topbar-right">
-          <a href={SHEET_EDIT_URL||'#'} target="_blank" rel="noopener noreferrer" className="icon-btn" title="Open Google Sheet">📊</a>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50">
 
-      <div className="page-header">
-        <div className="header-left">
-          <div className="eyebrow">Youth Development KPI</div>
-          <h1 className="page-h1">{h1}</h1>
-          <div className="page-sub">{sub}</div>
-          <div className="person-row">
-            <div className="avatar">YDC</div>
-            <div>
-              <div className="person-name">Youth Development Coach</div>
-              <div className="person-role">Youth Development & Employability</div>
-            </div>
-          </div>
-          <StatChips d={currentData} targets={targets} />
+      {/* Nav */}
+      <div className="bg-black px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <span className="text-yellow-400 font-black text-lg tracking-tight">TRASH | G✕NG</span>
+          <span className="text-gray-500 text-xs ml-3 hidden sm:inline">Youth Development KPI Tracker</span>
         </div>
-        <div className="header-right">
-          <div className="seg-toggle">
-            <button className={`seg-btn${view==='week'?' active':''}`} onClick={()=>setView('week')}>Week</button>
-            <button className={`seg-btn${view==='month'?' active':''}`} onClick={()=>setView('month')}>Month</button>
-          </div>
-          {weeks.length>0 && (
-            <div className="week-nav">
-              <button onClick={onPrev} disabled={!canPrev}>‹</button>
-              <span>{navLbl||'…'}</span>
-              <button onClick={onNext} disabled={!canNext}>›</button>
+        {weeks.length > 0 && (
+          <div className="flex items-center gap-2">
+            <div className="flex bg-gray-800 rounded-lg p-0.5">
+              {[["week","Week"],["month","Month"]].map(([id, lbl]) => (
+                <button key={id} onClick={() => setView(id)}
+                  className={`px-3 py-1 text-xs font-bold rounded-md transition-colors ${view === id ? "bg-yellow-400 text-black" : "text-gray-400 hover:text-white"}`}>
+                  {lbl}
+                </button>
+              ))}
             </div>
-          )}
+            <div className="flex items-center gap-1 bg-gray-800 rounded-lg px-2 py-1.5">
+              <button onClick={() => { if (idx > 0) setCur(list[idx - 1]); }}
+                className={`px-2 text-lg font-bold leading-none transition-colors ${idx > 0 ? "text-gray-400 hover:text-yellow-400" : "text-gray-700 cursor-default"}`}>‹</button>
+              <span className="text-white text-sm font-medium w-28 text-center">{label}</span>
+              <button onClick={() => { if (idx < list.length - 1) setCur(list[idx + 1]); }}
+                className={`px-2 text-lg font-bold leading-none transition-colors ${idx < list.length - 1 ? "text-gray-400 hover:text-yellow-400" : "text-gray-700 cursor-default"}`}>›</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Tabs */}
+      <div className="bg-white border-b border-gray-200 px-5">
+        <div className="flex gap-5">
+          {[["output","Coach Output"],["howto","How to Update"]].map(([id, lbl]) => (
+            <button key={id} onClick={() => setTab(id)}
+              className={`py-3 text-sm font-bold border-b-2 transition-colors ${tab === id ? "border-yellow-400 text-black" : "border-transparent text-gray-400 hover:text-gray-700"}`}>
+              {lbl}
+            </button>
+          ))}
         </div>
       </div>
 
-      <main className="content">
-        {view==='week' && <HealthBanner d={currentData} targets={targets} />}
-        {SECTIONS.map(sec => (
-          <SectionBand key={sec.title} sec={sec} d={currentData} targets={targets}
-            allData={data} weeks={weeks} view={view} />
-        ))}
-      </main>
-    </>
+      <div className="max-w-3xl mx-auto px-4 py-5 space-y-4">
+
+        {tab === "output" && (
+          <>
+            {status === "loading" && (
+              <div className="flex flex-col items-center justify-center py-24 space-y-4 text-gray-400">
+                <div className="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full spin" />
+                <p className="text-sm">Loading from Google Sheets…</p>
+              </div>
+            )}
+            {status === "nourl" && (
+              <div className="bg-yellow-50 border-2 border-dashed border-yellow-400 rounded-2xl p-8 text-center space-y-2">
+                <div className="text-3xl">📊</div>
+                <div className="font-bold text-yellow-800">Google Sheet not connected</div>
+                <div className="text-yellow-600 text-sm">Add the Apps Script web app URL to SHEET_CSV_URL at the top of this file.</div>
+              </div>
+            )}
+            {status === "error" && (
+              <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 text-center space-y-3">
+                <div className="text-3xl">⚠️</div>
+                <div className="font-bold text-red-800">Couldn't connect to Google Sheet</div>
+                <div className="text-red-600 text-sm">Check the Apps Script is deployed as a web app with access set to <strong>Anyone</strong>.</div>
+                <a href={SHEET_EDIT_URL} target="_blank" rel="noopener noreferrer"
+                  className="inline-block mt-1 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
+                  Open Google Sheet →
+                </a>
+              </div>
+            )}
+            {status === "empty" && (
+              <div className="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-6 text-center space-y-3">
+                <div className="text-3xl">📋</div>
+                <div className="font-bold text-yellow-800">Sheet is connected but has no data yet</div>
+                <div className="text-yellow-700 text-sm">Add at least one week of data to the Google Sheet (row 3 onwards) and refresh this page.</div>
+                <a href={SHEET_EDIT_URL} target="_blank" rel="noopener noreferrer"
+                  className="inline-block mt-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
+                  Open Google Sheet →
+                </a>
+              </div>
+            )}
+            {status === "ok" && d && (
+              <>
+                {/* Coach */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-black font-black text-sm shrink-0">{COACH.initials}</div>
+                  <div>
+                    <div className="font-bold text-sm text-gray-900">{COACH.name}</div>
+                    <div className="text-xs text-gray-500">{COACH.role}</div>
+                  </div>
+                </div>
+
+                {/* Headline stats */}
+                <div className="flex gap-3 flex-col sm:flex-row">
+                  <StatCard emoji="🧑🏾‍🤝‍🧑🏽" label="YP Contacts" value={d.ypContacts} target={targets.ypContacts}
+                    sub={view === "month" ? "meaningful contacts this month" : "meaningful contacts this week"} />
+                  <StatCard emoji="📁" label="Active Caseload" value={d.caseloadSize} target={TARGETS.caseloadSize}
+                    sub="young people on caseload" />
+                </div>
+
+                <Health d={d} targets={targets} view={view} />
+
+                {SECTIONS.map(sec => <SectionCard key={sec.title} sec={sec} d={d} targets={targets} />)}
+
+                <div className="flex flex-wrap gap-4 justify-center pt-1 pb-4">
+                  {["green","amber","red"].map(k => (
+                    <div key={k} className="flex items-center gap-1.5 text-xs text-gray-500">
+                      <div className={`w-2 h-2 rounded-full ${RAG[k].bar}`} />
+                      {RAG[k].label}
+                    </div>
+                  ))}
+                  <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                    <span className="bg-gray-100 text-gray-400 rounded px-1.5 py-0.5 text-xs">monthly</span>
+                    Monthly KPI
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        {tab === "howto" && <HowToUpdate />}
+      </div>
+
+      <div className="text-center text-xs text-gray-400 pb-8 mt-4">
+        Trash Gxng Academy CIC · Youth Development KPI Tracker
+      </div>
+    </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
