@@ -320,7 +320,14 @@ function parseCSV(text) {
 }
 
 function toNum(v)  { return (v===''||v==null) ? 0 : (Number(v)||0); }
-function toBool(v) { return v ? ['true','yes','1','y'].includes(String(v).toLowerCase().trim()) : false; }
+function toBool(v) {
+  // TRUE / yes / y / ticked checkbox = done. Any number above 0 also counts as done.
+  if (v === '' || v == null) return false;
+  const s = String(v).toLowerCase().trim();
+  if (['true','yes','y'].includes(s)) return true;
+  const n = Number(s);
+  return !isNaN(n) && n > 0;
+}
 
 function loadSheetData(text) {
   const rows = parseCSV(text);
