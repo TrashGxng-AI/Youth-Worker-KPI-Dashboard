@@ -204,7 +204,7 @@ function loadSheetData(text) {
       actionPlansUpdated:     toBool(c[3]),
       applicantFollowups:     toBool(c[4]),
       outreachActivities:     toNum(c[5]),
-      caseloadSize:           toNum(c[6]),
+      caseloadSize:           (c[6] === '' || c[6] == null || isNaN(Number(c[6]))) ? null : Number(c[6]), // blank = not entered
       jobClubSessions:        toNum(c[7]),
       mockInterviews:         toNum(c[8]),
       linkedinSessions:       toNum(c[9]),
@@ -259,7 +259,7 @@ function aggregateMonth(mWeeks, data) {
     actionPlansUpdated:     rows.every(r => r.actionPlansUpdated),
     applicantFollowups:     rows.every(r => r.applicantFollowups),
     outreachActivities:     sum('outreachActivities'),
-    caseloadSize:           rows[rows.length - 1].caseloadSize,     // latest week's figure
+    caseloadSize:           [...rows].reverse().find(r => r.caseloadSize !== null)?.caseloadSize ?? null, // latest figure entered
     jobClubSessions:        sum('jobClubSessions'),
     mockInterviews:         sum('mockInterviews'),
     linkedinSessions:       sum('linkedinSessions'),
@@ -292,9 +292,10 @@ function monthTargets(n) {
 // ═══════════════════════════════════════════════════════════════
 
 function StatCard({ emoji, label, value, target, sub }) {
-  const p = calcPct(value, target);
+  const missing = value === null || value === undefined;
+  const p = missing ? null : calcPct(value, target);
   const key = getRag(p);
-  const col = key === "green" ? "text-green-400" : key === "amber" ? "text-yellow-400" : "text-red-400";
+  const col = missing ? "text-gray-500" : key === "green" ? "text-green-400" : key === "amber" ? "text-yellow-400" : "text-red-400";
   return (
     <div className="bg-black rounded-2xl px-5 py-4 flex items-center justify-between flex-1">
       <div>
@@ -302,11 +303,11 @@ function StatCard({ emoji, label, value, target, sub }) {
           <span className="text-base">{emoji}</span>
           <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">{label}</span>
         </div>
-        <div className="text-white font-black text-2xl leading-none">{value}</div>
-        <div className="text-gray-500 text-xs mt-1">{sub}</div>
+        <div className="text-white font-black text-2xl leading-none">{missing ? "—" : value}</div>
+        <div className="text-gray-500 text-xs mt-1">{missing ? "not entered for this week" : sub}</div>
       </div>
       <div className={`text-right ${col}`}>
-        <div className="text-xl font-black leading-none">{p ?? 0}%</div>
+        <div className="text-xl font-black leading-none">{missing ? "—" : `${p}%`}</div>
         <div className="text-xs font-semibold mt-0.5">of {target} target</div>
       </div>
     </div>
